@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: pattern-analyzer-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pattern_analyzer}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+app:
+  cors:
+    path: /api/**
+    allowed-origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+      - http://localhost:5174
+      - http://127.0.0.1:5174
+      - http://localhost:5175
+      - http://127.0.0.1:5175
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - '*'
+server:
+  port: 8080

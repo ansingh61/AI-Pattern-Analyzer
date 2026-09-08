@@ -1,0 +1,11 @@
+package com.example.patternanalyzer.domain.repository;
+
+import com.example.patternanalyzer.domain.entity.BrokerEntity;
+import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BrokerRepository extends JpaRepository<BrokerEntity, UUID> {
+
+}
