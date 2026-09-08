@@ -22,7 +22,7 @@ type SystemAlert = { id: string; message: string; level: string; service: string
 type SystemLog = { time: string; level: string; service: string; message: string };
 type BackgroundJob = { id: string; name: string; status: string; progress: number; detail: string };
 
-const API = 'http://localhost:8080/api';
+const API = '/api';
 const symbols = ['BTC/USDT', 'ETH/USDT', 'NVDA', 'SPY', 'SOL/USDT'];
 const navItems = [
   ['terminal', 'Dashboard', CandlestickChart], ['chart', 'Chart Workspace', LineChart], ['scanner', 'Pattern Scanner', Target],
