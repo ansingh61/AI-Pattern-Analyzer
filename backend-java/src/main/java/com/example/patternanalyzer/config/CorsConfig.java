@@ -9,27 +9,29 @@ import java.util.List;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
-    private final String path;
-    private final List<String> allowedOrigins;
-    private final List<String> allowedMethods;
-    private final List<String> allowedHeaders;
 
-    public CorsConfig(
-            @Value("${app.cors.path}") String path,
-            @Value("${app.cors.allowed-origins}") List<String> allowedOrigins,
-            @Value("${app.cors.allowed-methods}") List<String> allowedMethods,
-            @Value("${app.cors.allowed-headers}") List<String> allowedHeaders) {
-        this.path = path;
-        this.allowedOrigins = allowedOrigins;
-        this.allowedMethods = allowedMethods;
-        this.allowedHeaders = allowedHeaders;
+    @Value("${app.cors.path}")
+    private String path;
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
+    @Value("${app.cors.allowed-methods}")
+    private String allowedMethods;
+    @Value("${app.cors.allowed-headers}")
+    private String allowedHeaders;
+
+    private String[] split(String value) {
+        if (value == null || value.isBlank()) {
+            return new String[0];
+        }
+        return value.split("\\s*,\\s*");
     }
 
+    @SuppressWarnings("null")
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping(path)
-            .allowedOrigins(allowedOrigins.toArray(String[]::new))
-            .allowedMethods(allowedMethods.toArray(String[]::new))
-            .allowedHeaders(allowedHeaders.toArray(String[]::new));
+            .allowedOrigins(split(allowedOrigins))
+            .allowedMethods(split(allowedMethods))
+            .allowedHeaders(split(allowedHeaders));
     }
 }

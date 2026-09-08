@@ -32,6 +32,23 @@ const navItems = [
   ['learning', 'Learning AI', Bot], ['plugins', 'Plugins', LayoutGrid], ['system', 'System Monitor', Gauge], ['settings', 'Settings', Settings],
 ] as const;
 
+const themes = ['copper', 'ocean', 'moss'] as const;
+type Theme = typeof themes[number];
+
+function GlobalSidebar({ active, theme, onNavigate, onThemeChange }: { active: string; theme: Theme; onNavigate: (id: string) => void; onThemeChange: () => void }) {
+  return <aside className="global-sidebar">
+    <button className="menu-button" title="Toggle navigation"><Menu size={17} /></button>
+    {navItems.map(([id, label, Icon]) => <button key={id} className={`nav-item ${active === id ? 'active' : ''}`} onClick={() => onNavigate(id)} title={label}><Icon size={17} /><span>{label}</span></button>)}
+    <div className="sidebar-spacer" />
+    <button className="nav-item" title="Risk controls" onClick={() => onNavigate('risk')}><SlidersHorizontal size={17} /><span>Risk Controls</span></button>
+    <button className="nav-item theme-switcher" title="Change theme" onClick={onThemeChange}><Sparkles size={17} /><span>Theme: {theme}</span></button>
+  </aside>;
+}
+
+function PageFrame({ active, theme, onNavigate, onThemeChange, children }: { active: string; theme: Theme; onNavigate: (id: string) => void; onThemeChange: () => void; children: ReactNode }) {
+  return <div className="page-frame"><GlobalSidebar active={active} theme={theme} onNavigate={onNavigate} onThemeChange={onThemeChange} />{children}</div>;
+}
+
 const fallbackCandles: Candle[] = Array.from({ length: 72 }, (_, index) => {
   const base = 42400 + Math.sin(index / 6) * 560 + index * 8;
   const open = base + Math.sin(index * 1.8) * 190;
@@ -73,6 +90,7 @@ function App() {
   const [symbol, setSymbol] = useState('BTC/USDT');
   const [timeframe, setTimeframe] = useState('4H');
   const [active, setActive] = useState('terminal');
+  const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('pattern-analyzer-theme') as Theme) || 'copper');
   const [candles, setCandles] = useState<Candle[]>(fallbackCandles);
   const [matches, setMatches] = useState<Match[]>(fallbackMatches);
   const [selection, setSelection] = useState<[number, number]>([51, 66]);
@@ -81,6 +99,13 @@ function App() {
   const [paperTrade, setPaperTrade] = useState('');
   const [bottomTab, setBottomTab] = useState('Historical Matches');
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('pattern-analyzer-theme', theme);
+  }, [theme]);
+
+  const cycleTheme = () => setTheme(current => themes[(themes.indexOf(current) + 1) % themes.length]);
 
   useEffect(() => {
     getJson<Candle[]>(`${API}/market/candles?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}&limit=72`, fallbackCandles).then(setCandles);
@@ -124,25 +149,28 @@ function App() {
     setPaperTrade('Paper order accepted');
   };
 
-  if (active === 'matches') return <HistoricalViewer matches={matches} onBack={() => setActive('terminal')} />;
-  if (active === 'compare') return <CompareViewer matches={matches} onBack={() => setActive('terminal')} />;
-  if (active === 'chart') return <MultiChartViewer onBack={() => setActive('terminal')} />;
-  if (active === 'library') return <PatternDatabaseViewer onBack={() => setActive('terminal')} />;
-  if (active === 'learning') return <AiLearningLabViewer onBack={() => setActive('terminal')} />;
-  if (active === 'plugins') return <PluginMarketplaceViewer onBack={() => setActive('terminal')} />;
-  if (active === 'system') return <SystemMonitorViewer onBack={() => setActive('terminal')} />;
-  if (active === 'risk') return <RiskViewer onBack={() => setActive('terminal')} />;
-  if (active === 'news') return <IntelligenceViewer onBack={() => setActive('terminal')} />;
-  if (active === 'watchlist') return <WatchlistViewer onBack={() => setActive('terminal')} />;
-  if (active === 'alerts') return <AlertsViewer onBack={() => setActive('terminal')} />;
-  if (active === 'reports') return <AnalyticsViewer onBack={() => setActive('terminal')} />;
-  if (active === 'strategy') return <VisualStrategyDesigner onBack={() => setActive('terminal')} />;
-  if (active === 'replay') return <ReplayViewer onBack={() => setActive('terminal')} />;
-  if (active === 'scanner') return <ScannerViewer onBack={() => setActive('terminal')} />;
-  if (active === 'research') return <ResearchViewer onBack={() => setActive('terminal')} />;
-  if (active === 'portfolio' || active === 'journal') return <PortfolioViewer onBack={() => setActive('terminal')} />;
-  if (active === 'brokers') return <BrokerViewer onBack={() => setActive('terminal')} />;
-  if (active === 'settings') return <SettingsViewer onBack={() => setActive('terminal')} />;
+  const page = active === 'matches' ? <HistoricalViewer matches={matches} onBack={() => setActive('terminal')} />
+    : active === 'compare' ? <CompareViewer matches={matches} onBack={() => setActive('terminal')} />
+    : active === 'chart' ? <MultiChartViewer onBack={() => setActive('terminal')} />
+    : active === 'library' ? <PatternDatabaseViewer onBack={() => setActive('terminal')} />
+    : active === 'learning' ? <AiLearningLabViewer onBack={() => setActive('terminal')} />
+    : active === 'plugins' ? <PluginMarketplaceViewer onBack={() => setActive('terminal')} />
+    : active === 'system' ? <SystemMonitorViewer onBack={() => setActive('terminal')} />
+    : active === 'risk' ? <RiskViewer onBack={() => setActive('terminal')} />
+    : active === 'news' ? <IntelligenceViewer onBack={() => setActive('terminal')} />
+    : active === 'watchlist' ? <WatchlistViewer onBack={() => setActive('terminal')} />
+    : active === 'alerts' ? <AlertsViewer onBack={() => setActive('terminal')} />
+    : active === 'reports' ? <AnalyticsViewer onBack={() => setActive('terminal')} />
+    : active === 'strategy' ? <VisualStrategyDesigner onBack={() => setActive('terminal')} />
+    : active === 'replay' ? <ReplayViewer onBack={() => setActive('terminal')} />
+    : active === 'scanner' ? <ScannerViewer onBack={() => setActive('terminal')} />
+    : active === 'research' ? <ResearchViewer onBack={() => setActive('terminal')} />
+    : active === 'portfolio' || active === 'journal' ? <PortfolioViewer onBack={() => setActive('terminal')} />
+    : active === 'brokers' ? <BrokerViewer onBack={() => setActive('terminal')} />
+    : active === 'settings' ? <SettingsViewer onBack={() => setActive('terminal')} />
+    : null;
+
+  if (page) return <PageFrame active={active} theme={theme} onNavigate={setActive} onThemeChange={cycleTheme}>{page}</PageFrame>;
 
   return <div className="app-shell">
     <header className="topbar">
@@ -162,6 +190,7 @@ function App() {
         {navItems.map(([id, label, Icon]) => <button key={id} className={`nav-item ${active === id ? 'active' : ''}`} onClick={() => setActive(id)} title={label}><Icon size={17} /><span>{label}</span></button>)}
         <div className="sidebar-spacer" />
         <button className="nav-item" title="Risk controls"><SlidersHorizontal size={17} /><span>Risk Controls</span></button>
+        <button className="nav-item theme-switcher" title="Change theme" onClick={cycleTheme}><Sparkles size={17} /><span>Theme: {theme}</span></button>
       </aside>
       <main className="main-content">
         <div className="page-heading"><div><div className="eyebrow">WORKSPACE / {active.toUpperCase()}</div><h1>{active === 'terminal' ? 'Main Trading Terminal' : navItems.find(item => item[0] === active)?.[1]}</h1></div><div className="heading-actions"><button className="secondary-button"><Crosshair size={15} /> Crosshair</button><button className="secondary-button" onClick={advanceWorkflow}>Workflow step</button><button className="primary-button" onClick={runAnalysis}><Bot size={15} /> Analyze selection</button></div></div>

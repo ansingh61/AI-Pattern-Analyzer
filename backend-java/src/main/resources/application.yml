@@ -13,21 +13,8 @@ spring:
 app:
   cors:
     path: /api/**
-    allowed-origins:
-      - http://localhost:5173
-      - http://127.0.0.1:5173
-      - http://13.223.114.121:8080
-      - http://13.223.114.121:80
-      - http://localhost:5175
-      - http://127.0.0.1:5175
-    allowed-methods:
-      - GET
-      - POST
-      - PUT
-      - PATCH
-      - DELETE
-      - OPTIONS
-    allowed-headers:
-      - '*'
+    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://13.223.114.121:8080,http://13.223.114.121:80"
+    allowed-methods: "GET ,POST ,PUT ,PATCH ,DELETE ,OPTIONS"
+    allowed-headers: "*"
 server:
   port: 8080
