@@ -168,3 +168,39 @@ select,
 .theme-switcher {
   color: var(--theme-accent);
 }
+
+.theme-top-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 9px;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.theme-top-control svg {
+  color: var(--theme-accent);
+}
+
+.theme-top-control b {
+  color: var(--theme-accent);
+  font-size: 9px;
+  text-transform: capitalize;
+}
+
+.theme-top-control:hover {
+  border-color: var(--theme-accent);
+}
+
+.page-frame > .theme-top-control {
+  position: fixed;
+  z-index: 30;
+  top: 14px;
+  right: 76px;
+}

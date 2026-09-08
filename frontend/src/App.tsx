@@ -46,7 +46,11 @@ function GlobalSidebar({ active, theme, onNavigate, onThemeChange }: { active: s
 }
 
 function PageFrame({ active, theme, onNavigate, onThemeChange, children }: { active: string; theme: Theme; onNavigate: (id: string) => void; onThemeChange: () => void; children: ReactNode }) {
-  return <div className="page-frame"><GlobalSidebar active={active} theme={theme} onNavigate={onNavigate} onThemeChange={onThemeChange} />{children}</div>;
+  return <div className="page-frame"><GlobalSidebar active={active} theme={theme} onNavigate={onNavigate} onThemeChange={onThemeChange} /><ThemeControl theme={theme} onChange={onThemeChange} />{children}</div>;
+}
+
+function ThemeControl({ theme, onChange }: { theme: Theme; onChange: () => void }) {
+  return <button className="theme-top-control" title="Change theme" onClick={onChange}><Sparkles size={14} /><span>Theme</span><b>{theme}</b></button>;
 }
 
 const fallbackCandles: Candle[] = Array.from({ length: 72 }, (_, index) => {
@@ -182,7 +186,7 @@ function App() {
         <select value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>{['1M', '5M', '15M', '1H', '4H', '1D'].map(item => <option key={item}>{item}</option>)}</select>
         <span className="connected"><i /> Connected</span><span className="engine-status"><Bot size={13} /> AI ready</span>
       </div>
-      <div className="top-actions"><label className="search-box"><Search size={14} /><input placeholder="Search symbol, pattern..." /></label><button className="icon-button" title="Notifications"><Bell size={16} /></button><button className="icon-button" title="Settings"><Settings size={16} /></button><button className="avatar">DT</button></div>
+      <div className="top-actions"><label className="search-box"><Search size={14} /><input placeholder="Search symbol, pattern..." /></label><ThemeControl theme={theme} onChange={cycleTheme} /><button className="icon-button" title="Notifications"><Bell size={16} /></button><button className="icon-button" title="Settings"><Settings size={16} /></button><button className="avatar">DT</button></div>
     </header>
     <div className="workspace">
       <aside className="sidebar">
